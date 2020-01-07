@@ -1,23 +1,33 @@
-import { Controller, Post, Get, Put, Delete, Param } from '@nestjs/common';
+import { Controller, Post, Get, Put, Delete, Param, Body } from '@nestjs/common';
+import { CrearLibro } from './dto/crear-libro';
+import { LibrosService } from './libros.service';
+import { LibroI } from './interface/libro.interface';
 
 @Controller('libros')
 export class LibrosController {
 
-    @Post()
-    todosLibros(): string {
-        return 'todos los libros';
-    }
+    constructor(private readonly libroService: LibrosService) { }
     @Get()
-    creaLibro(): string {
-        return 'crea un nuevo libro';
+    todosLibros(): Promise<LibroI[]> {
+        return this.libroService.buscarTodos();
+    }
+
+    @Get(':id')
+    buscarUno(@Param('id') idLibro: string): Promise<LibroI> {
+        return this.libroService.buscarLibro(idLibro);
+    }
+
+    @Post()
+    crearLibro(@Body() libroDto: CrearLibro): Promise<LibroI> {
+        return this.libroService.crearLibro(libroDto);
     }
     @Put(':id')
-    modificaLibro(@Param('id') idLibro: string): string {
-        return `actualiza un libro! ${idLibro}`;
+    modificaLibro(@Param('id') idLibro: string, @Body() libroDto: CrearLibro): Promise<LibroI> {
+        return this.libroService.modificarLibro(idLibro, libroDto);
     }
     @Delete(':id')
-    borraLibro(@Param('id') idLibro: string): string {
-        return 'borra un libro!';
+    borraLibro(@Param('id') idLibro: string): Promise<LibroI> {
+        return this.libroService.borrarLibro(idLibro);
     }
 
 }
